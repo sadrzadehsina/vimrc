@@ -1,58 +1,41 @@
 call plug#begin('~/.vim/plugged')
-Plug 'francoiscabrol/ranger.vim' 
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
-Plug 'tpope/vim-fugitive'
-Plug 'jooize/vim-colemak'
-Plug 'joshdick/onedark.vim'
-Plug 'sheerun/vim-polyglot'
-Plug 'itchyny/lightline.vim'
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'ryanoasis/vim-devicons'
+Plug 'airblade/vim-gitgutter'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'morhetz/gruvbox'
 call plug#end()
 
-set background=dark
-highlight ColorColumn ctermbg=darkGrey
+autocmd vimenter * ++nested colorscheme gruvbox
+
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+
+let mapleader = "'"
+
+set relativenumber
+
 syntax on
-
-let g:onedark_termcolors=256
-let g:onedark_hide_endofbuffer=1
-colorscheme onedark
-
 set number
-set relativenumber 
-let mapleader = "\<Space>"
-  
-map <Leader>f :Ranger<CR>
-  
-" set indent to 2 spaces
-filetype plugin indent on
-set expandtab
+set noswapfile
+set hlsearch
+set ignorecase
+set incsearch
+set spell spelllang=en_us
+set encoding=UTF-8
+set smarttab
+set cindent
 set tabstop=2
-set softtabstop=2
 set shiftwidth=2
 
-set laststatus=2
+nnoremap <leader>s :set spell!<CR>
+nnoremap <leader>p :PlugInstall<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <leader>n :NERDTreeFocus<CR>
 
-set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
-
-silent! source "$HOME/.vim/bundle/vim-colemak/plugin/colemak.vim"
-
-" Fix for colemak.vim keymap collision. tpope/vim-fugitive's maps y<C-G>
-" and colemak.vim maps 'y' to 'w' (word). In combination this stalls 'y'
-" because Vim must wait to see if the user wants to press <C-G> as well.
-augroup RemoveFugitiveMappingForColemak
-    autocmd!
-    autocmd BufEnter * silent! execute "nunmap <buffer> <silent> y<C-G>"
-augroup END
-
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead'
-      \ },
-      \ }
-
-set guifont=Cascadia\ Code
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
